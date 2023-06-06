@@ -21,8 +21,6 @@ const ProjectProjector = () => {
     return <div>Loading...</div>;
   }
 
-  console.log("error", error);
-
   if (status === ProjectStatus.ERROR) {
     return <div>Error... {error}</div>;
   }
