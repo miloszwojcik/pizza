@@ -5,6 +5,7 @@ interface ProjectState {
   projectId: string;
   projectData: any;
   status: ProjectStatus;
+  error?: string;
 }
 
 export enum ProjectStatus {
@@ -19,6 +20,7 @@ const initialState: ProjectState = {
   projectId: "",
   projectData: {},
   status: ProjectStatus.INIT,
+  error: "",
 };
 
 export const projectSlice = createSlice({
@@ -29,6 +31,12 @@ export const projectSlice = createSlice({
       return {
         ...state,
         status: action.payload,
+      };
+    },
+    setProjectError: (state, action: PayloadAction<string>) => {
+      return {
+        ...state,
+        error: action.payload,
       };
     },
     setProjectId: (state, action: PayloadAction<string>) => {
@@ -46,7 +54,11 @@ export const projectSlice = createSlice({
   },
 });
 
-export const { setProjectId, setProjectData, setProjectStatus } =
-  projectSlice.actions;
+export const {
+  setProjectId,
+  setProjectData,
+  setProjectStatus,
+  setProjectError,
+} = projectSlice.actions;
 
 export default projectSlice.reducer;

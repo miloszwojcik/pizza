@@ -13,15 +13,18 @@ const shapes: Shapes = {
 };
 
 const ProjectProjector = () => {
-  const { projectData } = useAppSelector((state) => state.project);
-  const { status } = useAppSelector((state) => state.project);
+  const projectData = useAppSelector((state) => state.project.projectData);
+  const status = useAppSelector((state) => state.project.status);
+  const error = useAppSelector((state) => state.project.error);
 
   if (status === ProjectStatus.LOADING) {
     return <div>Loading...</div>;
   }
 
+  console.log("error", error);
+
   if (status === ProjectStatus.ERROR) {
-    return <div>Error...</div>;
+    return <div>Error... {error}</div>;
   }
 
   if (status === ProjectStatus.SUCCESS) {

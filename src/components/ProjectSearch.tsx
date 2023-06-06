@@ -3,6 +3,7 @@ import { useAppSelector, useAppDispatch } from "../store/hooks";
 import {
   ProjectStatus,
   setProjectData,
+  setProjectError,
   setProjectId,
   setProjectStatus,
 } from "./ProjectSlice";
@@ -16,43 +17,58 @@ const ProjectSearch = () => {
   const handleFetchProjectInit = () => {
     return fetch(`${PROJECT_API}/init`)
       .then((res) => {
-        return res.json();
+        if (res.ok) {
+          return res.json();
+        }
+
+        return res.json().then((err) => {
+          throw new Error(err.message);
+        });
       })
       .catch((err) => {
-        return err;
+        throw err;
       });
   };
 
   const handleFetchProjectById = (id: string) => {
     return fetch(`${PROJECT_API}/project/${id}`)
       .then((res) => {
-        return res.json();
+        if (res.ok) {
+          return res.json();
+        }
+
+        return res.json().then((err) => {
+          throw new Error(err.message);
+        });
       })
       .catch((err) => {
-        return err;
+        throw err;
       });
   };
 
   const fetchProject = async () => {
+    dispatch(setProjectError(""));
     dispatch(setProjectStatus(ProjectStatus.LOADING));
-    try {
-      if (!projectId) {
-        return handleFetchProjectInit().then((res) => {
-          return handleFetchProjectById(res.id);
-        });
-      } else {
-        return handleFetchProjectById(projectId);
-      }
-    } catch (err) {
-      dispatch(setProjectStatus(ProjectStatus.ERROR));
+
+    if (!projectId) {
+      return handleFetchProjectInit().then((res) => {
+        return handleFetchProjectById(res.id);
+      });
+    } else {
+      return handleFetchProjectById(projectId);
     }
   };
 
   const handleFetchProject = () => {
-    fetchProject().then((res) => {
-      dispatch(setProjectStatus(ProjectStatus.SUCCESS));
-      dispatch(setProjectData(res.project));
-    });
+    fetchProject()
+      .then((res) => {
+        dispatch(setProjectStatus(ProjectStatus.SUCCESS));
+        dispatch(setProjectData(res.project));
+      })
+      .catch((err) => {
+        dispatch(setProjectStatus(ProjectStatus.ERROR));
+        dispatch(setProjectError(err.message));
+      });
   };
 
   const handleProjectIdChange = (e: React.ChangeEvent<HTMLInputElement>) => {
